@@ -56,11 +56,16 @@ GameRegistry.uno = {
     selectedIndices: [],
     unoTimerId: null,
 
+<<<<<<< HEAD
     init: function () {
+=======
+    init: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.selectedIndices = [];
         this.unoTimerId = null;
     },
 
+<<<<<<< HEAD
     clearTimer: function () {
         if (this.unoTimerId !== null) { clearTimeout(this.unoTimerId); this.unoTimerId = null; }
     },
@@ -70,6 +75,17 @@ GameRegistry.uno = {
     },
 
     shuffleArrayEqually: function (array) {
+=======
+    clearTimer: function() {
+        if (this.unoTimerId !== null) { clearTimeout(this.unoTimerId); this.unoTimerId = null; }
+    },
+
+    handleData: function(data) {
+        // UNO特有のデータ受信処理（現状SYNC_GAME以外にリアルタイム系は無いため空のままで既存互換維持）
+    },
+
+    shuffleArrayEqually: function(array) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             const temp = array[i]; array[i] = array[j]; array[j] = temp;
@@ -77,7 +93,11 @@ GameRegistry.uno = {
         return array;
     },
 
+<<<<<<< HEAD
     createStandardUnoDeck: function () {
+=======
+    createStandardUnoDeck: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const colors = ['red', 'blue', 'yellow', 'green'];
         let deck = [];
         colors.forEach(c => {
@@ -100,8 +120,13 @@ GameRegistry.uno = {
         return this.shuffleArrayEqually(deck);
     },
 
+<<<<<<< HEAD
     hostGame: function () {
         if (sortedPlayers.length < 2) { customAlert("2人以上のプレイヤーが必要です。"); return; }
+=======
+    hostGame: function() {
+        if(sortedPlayers.length < 2) { customAlert("2人以上のプレイヤーが必要です。"); return; }
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         gameState.isStarted = true; gameState.gameType = 'uno';
         gameState.roster = shufflePlayers(sortedPlayers.map(p => ({ accId: p.accId, name: p.name })));
         gameState.deck = this.createStandardUnoDeck(); gameState.discardPile = []; gameState.hands = {};
@@ -111,7 +136,11 @@ GameRegistry.uno = {
 
         gameState.roster.forEach(p => {
             gameState.hands[p.accId] = [];
+<<<<<<< HEAD
             for (let i = 0; i < 7; i++) gameState.hands[p.accId].push(gameState.deck.pop());
+=======
+            for(let i=0; i<7; i++) gameState.hands[p.accId].push(gameState.deck.pop());
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         });
 
         let firstCard = gameState.deck.pop();
@@ -123,16 +152,25 @@ GameRegistry.uno = {
         gameState.currentSuit = firstCard.color;
         gameState.lastPlayedComboText = this.getJapaneseColor(firstCard.color) + firstCard.dispName;
 
+<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
 
     getJapaneseColor: function (color) {
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    getJapaneseColor: function(color) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (color === 'red') return '赤'; if (color === 'blue') return '青';
         if (color === 'yellow') return '黄'; if (color === 'green') return '緑';
         return '無色';
     },
 
+<<<<<<< HEAD
     cardShortLabel: function (value) {
         if (value === 'Skip') return 'SK'; if (value === 'Reverse') return 'RV';
         if (value === 'Draw2') return '+2'; if (value === 'WildDraw4') return '+4';
@@ -140,6 +178,15 @@ GameRegistry.uno = {
     },
 
     cardCenterIcon: function (card) {
+=======
+    cardShortLabel: function(value) {
+        if(value === 'Skip') return 'SK'; if(value === 'Reverse') return 'RV';
+        if(value === 'Draw2') return '+2'; if(value === 'WildDraw4') return '+4';
+        if(value === 'Wild') return 'W'; return value;
+    },
+
+    cardCenterIcon: function(card) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (card.value === 'Skip') {
             return `<svg viewBox="0 0 100 100" class="card-icon"><circle cx="50" cy="50" r="38" fill="none" stroke="white" stroke-width="13"/><line x1="24" y1="24" x2="76" y2="76" stroke="white" stroke-width="13"/></svg>`;
         }
@@ -165,10 +212,17 @@ GameRegistry.uno = {
                 <text x="50" y="68" font-size="26" font-weight="900" text-anchor="middle" fill="#222">+4</text>
             </svg>`;
         }
+<<<<<<< HEAD
         return null;
     },
 
     getCardDisplayValue: function (card) {
+=======
+        return null; 
+    },
+
+    getCardDisplayValue: function(card) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const label = this.cardShortLabel(card.value);
         const icon = this.cardCenterIcon(card);
         if (card.color === 'wild') {
@@ -182,13 +236,21 @@ GameRegistry.uno = {
                 <span class="corner-label br">${label}</span>`;
     },
 
+<<<<<<< HEAD
     hasPlayableCard: function (cards) {
+=======
+    hasPlayableCard: function(cards) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!gameState.discardPile || gameState.discardPile.length === 0) return false;
         const topCard = gameState.discardPile[gameState.discardPile.length - 1];
         return cards.some(card => card.color === 'wild' || card.color === gameState.currentSuit || card.value === topCard.value);
     },
 
+<<<<<<< HEAD
     isIllegalLastActionCard: function (cards) {
+=======
+    isIllegalLastActionCard: function(cards) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (cards.length !== 1) return false;
         const card = cards[0];
         // 元の条件式を完全維持
@@ -199,20 +261,30 @@ GameRegistry.uno = {
         return false;
     },
 
+<<<<<<< HEAD
     validateSelectionValidity: function (myCards) {
         if (this.selectedIndices.length === 0) return false;
+=======
+    validateSelectionValidity: function(myCards) {
+        if(this.selectedIndices.length === 0) return false;
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const topCard = gameState.discardPile[gameState.discardPile.length - 1];
         const bottomCard = myCards[this.selectedIndices[0]];
         return (bottomCard.color === 'wild' || bottomCard.color === gameState.currentSuit || bottomCard.value === topCard.value);
     },
 
+<<<<<<< HEAD
     reshuffleDeckFromDiscard: function () {
+=======
+    reshuffleDeckFromDiscard: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (gameState.deck.length > 0) return;
         const topCard = gameState.discardPile.pop();
         gameState.deck = this.shuffleArrayEqually(gameState.discardPile);
         gameState.discardPile = [topCard];
     },
 
+<<<<<<< HEAD
     drawCard: function () {
         const activePlayer = getActivePlayer();
         if (!activePlayer || activePlayer.accId !== myAccountId) return;
@@ -222,15 +294,34 @@ GameRegistry.uno = {
         if (this.hasPlayableCard(myCards) && !this.isIllegalLastActionCard(myCards)) {
             customAlert("出せるカードがあるため、山札を引くことはできません。手札から出してください。");
             return;
+=======
+    drawCard: function() {
+        const activePlayer = getActivePlayer();
+        if(!activePlayer || activePlayer.accId !== myAccountId) return;
+        if (gameState.hasDrawnThisTurn) { customAlert("1ターンにつき一枚しか引けません。"); return; }
+
+        const myCards = gameState.hands[myAccountId] || [];
+        if (this.hasPlayableCard(myCards) && !this.isIllegalLastActionCard(myCards)) { 
+            customAlert("出せるカードがあるため、山札を引くことはできません。手札から出してください。"); 
+            return; 
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         }
         this.reshuffleDeckFromDiscard();
         if (gameState.deck.length > 0) myCards.push(gameState.deck.pop());
         gameState.hasDrawnThisTurn = true; this.selectedIndices = [];
+<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
 
     renderMyHand: function (isMyTurn) {
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    renderMyHand: function(isMyTurn) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const handContainer = document.getElementById('uno-my-hand');
         handContainer.innerHTML = "";
         const myCards = gameState.hands[myAccountId] || [];
@@ -247,7 +338,11 @@ GameRegistry.uno = {
                 cardEl.innerHTML += `<span class="selection-order-badge">${orderNum}</span>`;
             }
 
+<<<<<<< HEAD
             if (isMyTurn) {
+=======
+            if(isMyTurn) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 cardEl.onclick = () => {
                     if (isSelected) {
                         this.selectedIndices = this.selectedIndices.filter(i => i !== idx);
@@ -279,12 +374,21 @@ GameRegistry.uno = {
         });
     },
 
+<<<<<<< HEAD
     startUno3SecondTimer: function () {
         if (this.unoTimerId !== null) return;
         this.unoTimerId = setTimeout(() => { GameRegistry.uno.executeUnoTimePenalty(); }, 3000);
     },
 
     executeUnoTimePenalty: function () {
+=======
+    startUno3SecondTimer: function() {
+        if (this.unoTimerId !== null) return; 
+        this.unoTimerId = setTimeout(() => { GameRegistry.uno.executeUnoTimePenalty(); }, 3000);
+    },
+
+    executeUnoTimePenalty: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.clearTimer();
         const hand = gameState.hands[myAccountId];
         if (hand && hand.length === 1 && gameState.unoCalled[myAccountId] === false) {
@@ -294,16 +398,25 @@ GameRegistry.uno = {
                 if (gameState.deck.length > 0) hand.push(gameState.deck.pop());
             }
             gameState.unoCalled[myAccountId] = true;
+<<<<<<< HEAD
             broadcastGameSync();
+=======
+            broadcast({ type: 'SYNC_GAME', state: gameState });
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             syncGameUI();
         }
     },
 
+<<<<<<< HEAD
     callUnoCall: function () {
+=======
+    callUnoCall: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.clearTimer();
         if (!gameState.unoCalled) gameState.unoCalled = {};
         gameState.unoCalled[myAccountId] = true;
         customAlert("UNO! コール成功！");
+<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
@@ -312,6 +425,16 @@ GameRegistry.uno = {
         // パス処理の既存ロジック
         const activePlayer = getActivePlayer();
         if (!activePlayer || activePlayer.accId !== myAccountId) return;
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    passTurn: function() {
+        // パス処理の既存ロジック
+        const activePlayer = getActivePlayer();
+        if(!activePlayer || activePlayer.accId !== myAccountId) return;
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const myCards = gameState.hands[myAccountId] || [];
         if (!gameState.hasDrawnThisTurn) { customAlert("パスする前に、まず山札から1枚引いてください。"); return; }
         if (this.hasPlayableCard(myCards) && !this.isIllegalLastActionCard(myCards)) {
@@ -334,6 +457,7 @@ GameRegistry.uno = {
         this.advanceTurn();
     },
 
+<<<<<<< HEAD
     isActionCard: function (value) {
         return ['Skip', 'Reverse', 'Draw2', 'Wild', 'WildDraw4'].includes(value);
     },
@@ -344,6 +468,18 @@ GameRegistry.uno = {
         if (!activePlayer || activePlayer.accId !== myAccountId) return;
         const myCards = gameState.hands[myAccountId] || [];
         if (this.selectedIndices.length === 0) return;
+=======
+    isActionCard: function(value) {
+        return ['Skip', 'Reverse', 'Draw2', 'Wild', 'WildDraw4'].includes(value);
+    },
+
+    playSelectedCards: function() {
+        // カード提出時の既存ロジック
+        const activePlayer = getActivePlayer();
+        if(!activePlayer || activePlayer.accId !== myAccountId) return;
+        const myCards = gameState.hands[myAccountId] || [];
+        if(this.selectedIndices.length === 0) return;
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!this.validateSelectionValidity(myCards)) {
             customAlert("一番下に出すカードは、場のカードと同じ色か同じ数字である必要があります。");
             return;
@@ -381,7 +517,11 @@ GameRegistry.uno = {
             gameState.winner = myName;
             gameState.winnerHandText = comboText;
             gameState.currentSuit = lastPlayedCard.color === 'wild' ? gameState.currentSuit : lastPlayedCard.color;
+<<<<<<< HEAD
             broadcastGameSync();
+=======
+            broadcast({ type: 'SYNC_GAME', state: gameState });
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             syncGameUI();
             return;
         }
@@ -411,7 +551,11 @@ GameRegistry.uno = {
         this.processCardEffect(lastPlayedCard, playedCount);
     },
 
+<<<<<<< HEAD
     executeImmediateStackFailurePenalty: function () {
+=======
+    executeImmediateStackFailurePenalty: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const myCards = gameState.hands[myAccountId] || [];
         const multiplier = gameState.pendingDrawType === 'WildDraw4' ? 4 : 2;
         const totalPenaltyCards = gameState.pendingDrawCount * multiplier;
@@ -423,6 +567,7 @@ GameRegistry.uno = {
         gameState.pendingDrawCount = 0; gameState.pendingDrawType = null;
     },
 
+<<<<<<< HEAD
     // ドロー2/ワイルド4の重ねがけ中、手番が回ってきた本人が「残り1枚」で、
     // かつその1枚がたまたま場に出せるカード（＝上がれてしまうカード）だった場合、
     // そのまま出されると重ねがけ判定を一切経験せずに勝ち抜けてしまう抜け穴があるため、
@@ -443,19 +588,43 @@ GameRegistry.uno = {
         const myCard = myHand[0];
         const topCard = gameState.discardPile[gameState.discardPile.length - 1];
         const isPlayable = (myCard.color === 'wild' || myCard.color === gameState.currentSuit || myCard.value === topCard.value);
+=======
+    // ドロー2/ワイルド4の重ねがけ中、手番が回ってきた相手が「残り1枚」で、
+    // かつその1枚がたまたま場に出せるカード（＝上がれてしまうカード）だった場合、
+    // そのまま出されると重ねがけ判定を一切経験せずに勝ち抜けてしまう抜け穴があるため、
+    // 手番が回った瞬間にこちらでチェックし、相手がそのカードで重ねがけを継続できない場合は
+    // 自動的に累積分のペナルティを渡してしまう。
+    checkForcedStackPenaltyOnTurnPass: function() {
+        if (!gameState.pendingDrawCount || gameState.pendingDrawCount <= 0) return;
+        const activePlayer = getActivePlayer();
+        if (!activePlayer) return;
+        const theirHand = gameState.hands[activePlayer.accId] || [];
+        if (theirHand.length !== 1) return;
+        if (!gameState.discardPile || gameState.discardPile.length === 0) return;
+
+        const theirCard = theirHand[0];
+        const topCard = gameState.discardPile[gameState.discardPile.length - 1];
+        const isPlayable = (theirCard.color === 'wild' || theirCard.color === gameState.currentSuit || theirCard.value === topCard.value);
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!isPlayable) return;
 
         // 重ねがけを正当に継続できるカード（同じ種類のDraw2 / WildDraw4）なら、
         // そのまま出して上がる分には抜け穴には当たらないので見逃す。
         const isValidContinuation =
+<<<<<<< HEAD
             (gameState.pendingDrawType === 'Draw2' && myCard.value === 'Draw2') ||
             (gameState.pendingDrawType === 'WildDraw4' && myCard.value === 'WildDraw4');
+=======
+            (gameState.pendingDrawType === 'Draw2' && theirCard.value === 'Draw2') ||
+            (gameState.pendingDrawType === 'WildDraw4' && theirCard.value === 'WildDraw4');
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (isValidContinuation) return;
 
         const multiplier = gameState.pendingDrawType === 'WildDraw4' ? 4 : 2;
         const totalPenaltyCards = gameState.pendingDrawCount * multiplier;
         for (let i = 0; i < totalPenaltyCards; i++) {
             this.reshuffleDeckFromDiscard();
+<<<<<<< HEAD
             if (gameState.deck.length > 0) myHand.push(gameState.deck.pop());
         }
         gameState.forcedDrawNoticeText = `⚠️ 残り1枚のカードでは重ねがけを継続できなかったため、累積${totalPenaltyCards}枚を自動的に引きました`;
@@ -474,6 +643,26 @@ GameRegistry.uno = {
     },
 
     processCardEffect: function (card, count) {
+=======
+            if (gameState.deck.length > 0) theirHand.push(gameState.deck.pop());
+        }
+        gameState.forcedDrawNoticeText = `⚠️ ${activePlayer.name}さんは残り1枚のカードでは重ねがけを継続できなかったため、累積${totalPenaltyCards}枚を自動的に引きました`;
+        gameState.pendingDrawCount = 0;
+        gameState.pendingDrawType = null;
+    },
+
+    selectWildColor: function(color) {
+        gameState.currentSuit = color;
+        document.getElementById('uno-color-selector').style.display = 'none';
+        gameState.turnIndex = this.getNextPlayerIndex(1);
+        this.checkForcedStackPenaltyOnTurnPass();
+        gameState.hasDrawnThisTurn = false;
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    processCardEffect: function(card, count) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         count = count || 1;
         if (card.value === 'Skip') {
             for (let i = 0; i < count; i++) {
@@ -490,6 +679,7 @@ GameRegistry.uno = {
         } else {
             gameState.turnIndex = this.getNextPlayerIndex(1);
         }
+<<<<<<< HEAD
         gameState.hasDrawnThisTurn = false;
         broadcastGameSync();
         syncGameUI();
@@ -504,6 +694,23 @@ GameRegistry.uno = {
     },
 
     getNextPlayerIndex: function (steps) {
+=======
+        this.checkForcedStackPenaltyOnTurnPass();
+        gameState.hasDrawnThisTurn = false;
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    advanceTurn: function() {
+        gameState.turnIndex = this.getNextPlayerIndex(1);
+        gameState.hasDrawnThisTurn = false;
+        this.selectedIndices = [];
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    getNextPlayerIndex: function(steps) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         let idx = gameState.turnIndex;
         const rosterLen = (typeof getRoster === 'function' ? getRoster().length : gameState.roster.length);
         for (let i = 0; i < steps; i++) {
@@ -512,6 +719,7 @@ GameRegistry.uno = {
         return idx;
     },
 
+<<<<<<< HEAD
     syncUI: function () {
         // 重ねがけの抜け穴チェックは「対象者本人」だけが自分の手札に対して行う
         this.selfCheckForcedStackPenalty();
@@ -519,11 +727,29 @@ GameRegistry.uno = {
         // UI表示切り替え
         document.getElementById('game-title-label').textContent = "UNO プレイフィールド";
         showGameBoard('uno-board-area');
+=======
+    syncUI: function() {
+        // UI表示切り替え
+        document.getElementById('game-title-label').textContent = "UNO プレイフィールド";
+        document.getElementById('uno-board-area').classList.add('active');
+        const drawBoard = document.getElementById('draw-board-area');
+        if(drawBoard) drawBoard.classList.remove('active');
+        const resultBoard = document.getElementById('draw-result-area');
+        if(resultBoard) resultBoard.classList.remove('active');
+        const chinchiroBoard = document.getElementById('chinchiro-board-area');
+        if(chinchiroBoard) chinchiroBoard.classList.remove('active');
+        const chinchigutiBoard = document.getElementById('chinchiguti-board-area');
+        if(chinchigutiBoard) chinchigutiBoard.classList.remove('active');
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
 
         const activePlayer = getActivePlayer();
         const isMyTurn = (activePlayer && activePlayer.accId === myAccountId);
         const amInRoster = !gameState.roster || !gameState.roster.length || gameState.roster.some(p => p.accId === myAccountId);
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         document.getElementById('uno-spectator-banner').style.display = (!amInRoster && !gameState.isEnded) ? 'block' : 'none';
 
         if (gameState.isEnded && gameState.winner) {
@@ -536,17 +762,30 @@ GameRegistry.uno = {
             document.getElementById('uno-emergency-alert-bar').style.display = 'none';
             return;
         }
+<<<<<<< HEAD
 
         document.getElementById('uno-winner-overlay').style.display = 'none';
         document.getElementById('uno-playing-area').style.display = 'block';
         document.getElementById('uno-direction').textContent = gameState.direction === 1 ? "順番：時計回り 🔄" : "順番：反時計回り ↩️";
 
+=======
+        
+        document.getElementById('uno-winner-overlay').style.display = 'none';
+        document.getElementById('uno-playing-area').style.display = 'block';
+        document.getElementById('uno-direction').textContent = gameState.direction === 1 ? "順番：時計回り 🔄" : "順番：反時計回り ↩️";
+        
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const topCard = gameState.discardPile[gameState.discardPile.length - 1];
         const centerView = document.getElementById('uno-center-card');
         centerView.className = `uno-card c-${topCard.color === 'wild' ? 'wild' : topCard.color}`;
         centerView.innerHTML = this.getCardDisplayValue(topCard);
+<<<<<<< HEAD
         if (topCard.color === 'wild') {
             const suitText = { red: '赤', blue: '青', yellow: '黄', green: '緑' }[gameState.currentSuit];
+=======
+        if(topCard.color === 'wild') {
+            const suitText = {red:'赤', blue:'青', yellow:'黄', green:'緑'}[gameState.currentSuit];
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             centerView.innerHTML += `<span style="position:absolute; bottom:3px; font-size:0.55rem; background:#000; padding:1px 3px; border-radius:2px;">色:${suitText}</span>`;
         }
 
@@ -576,7 +815,11 @@ GameRegistry.uno = {
 
         let unoNamesList = [];
         gameState.roster.forEach(p => {
+<<<<<<< HEAD
             if (p.accId === myAccountId) return;
+=======
+            if (p.accId === myAccountId) return; 
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             const len = gameState.hands[p.accId] ? gameState.hands[p.accId].length : 0;
             if (len === 1) unoNamesList.push(`【${p.name}さん】`);
         });
@@ -596,6 +839,7 @@ GameRegistry.uno = {
         const infoBar = document.getElementById('game-info');
         let baseStatus = "";
         if (!amInRoster) {
+<<<<<<< HEAD
             baseStatus = `⏱️ ${activePlayer ? escapeHtml(activePlayer.name) : '相手'}のターンです...(観戦中)`;
         } else if (isMyTurn) {
             baseStatus = gameState.hasDrawnThisTurn ? "山札から引きました。出せるカードがあれば出してください。出せなければパスしてください。" : "⚡ あなたの番です。出せるカードがあれば出してください（同じ数字・記号なら複数枚選んで出せます）。出せなければ山札から引いてください。";
@@ -604,6 +848,16 @@ GameRegistry.uno = {
         }
         infoBar.innerHTML = `<div>${baseStatus}</div>`;
 
+=======
+            baseStatus = `⏱️ ${activePlayer ? activePlayer.name : '相手'}のターンです...(観戦中)`;
+        } else if (isMyTurn) {
+            baseStatus = gameState.hasDrawnThisTurn ? "山札から引きました。出せるカードがあれば出してください。出せなければパスしてください。" : "⚡ あなたの番です。出せるカードがあれば出してください（同じ数字・記号なら複数枚選んで出せます）。出せなければ山札から引いてください。";
+        } else {
+            baseStatus = `⏱️ ${activePlayer ? activePlayer.name : '相手'}のターンです...`;
+        }
+        infoBar.innerHTML = `<div>${baseStatus}</div>`;
+        
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.renderMyHand(isMyTurn);
 
         const myHandLen = (gameState.hands[myAccountId] || []).length;

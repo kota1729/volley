@@ -139,34 +139,54 @@ GameRegistry.chinchiguti = {
     rollAnimTimer: null,
     rollingInterval: null,
 
+<<<<<<< HEAD
     init: function () {
+=======
+    init: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.isRolling = false;
         this.rollAnimTimer = null;
         this.rollingInterval = null;
     },
 
     // 他プレイヤーへ「振っている最中」の演出を伝えるリアルタイムイベント
+<<<<<<< HEAD
     handleData: function (data) {
+=======
+    handleData: function(data) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (data.type === 'CHINCHIGUTI_ROLLING') {
             const n = data.diceCount || (gameState.chinchigutiConfig ? gameState.chinchigutiConfig.diceCount : 3);
             this.playRollingAnimation(n);
         }
     },
 
+<<<<<<< HEAD
     diceFace: function (n) {
+=======
+    diceFace: function(n) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
         return faces[Math.max(1, Math.min(6, n)) - 1];
     },
 
     // サイコロの目を要素に反映する共通処理(「1」の目だけ赤色にする)
+<<<<<<< HEAD
     applyFace: function (el, n) {
+=======
+    applyFace: function(el, n) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!el) return;
         el.textContent = this.diceFace(n);
         el.classList.toggle('die-one', n === 1);
     },
 
     // サイコロの個数が多い時(最大100個)でも並びきるよう、個数に応じてサイズを自動調整する
+<<<<<<< HEAD
     diceSizeFor: function (n) {
+=======
+    diceSizeFor: function(n) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (n <= 10) return 48;
         if (n <= 20) return 40;
         if (n <= 35) return 34;
@@ -175,11 +195,19 @@ GameRegistry.chinchiguti = {
         return 18;
     },
 
+<<<<<<< HEAD
     applyContainerSize: function (container, n) {
         if (container) container.style.setProperty('--chinchiguti-die-size', this.diceSizeFor(n) + 'px');
     },
 
     hostGame: function () {
+=======
+    applyContainerSize: function(container, n) {
+        if (container) container.style.setProperty('--chinchiguti-die-size', this.diceSizeFor(n) + 'px');
+    },
+
+    hostGame: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (sortedPlayers.length < 1) { customAlert("1人以上のプレイヤーが必要です。"); return; }
         gameState.isStarted = true; gameState.gameType = 'chinchiguti';
         gameState.roster = shufflePlayers(sortedPlayers.map(p => ({ accId: p.accId, name: p.name })));
@@ -196,12 +224,20 @@ GameRegistry.chinchiguti = {
         gameState.isEnded = false; gameState.winner = null; gameState.winnerHandText = '';
         this.isRolling = false;
 
+<<<<<<< HEAD
         broadcastGameSync();
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         syncGameUI();
     },
 
     // ゲーム開始前（誰もまだ振っていない間）だけ、サイコロの数を変更できる（1〜100個の範囲でカスタム可能）
+<<<<<<< HEAD
     changeDiceCount: function (value) {
+=======
+    changeDiceCount: function(value) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!gameState.chinchigutiConfig) return;
         const anyRolled = Object.values(gameState.chinchigutiStats || {}).some(s => s.totalRolls > 0);
         if (anyRolled || gameState.isEnded) return;
@@ -210,11 +246,19 @@ GameRegistry.chinchiguti = {
         n = Math.max(1, Math.min(100, n));
         if (n === gameState.chinchigutiConfig.diceCount) return;
         gameState.chinchigutiConfig.diceCount = n;
+<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
 
     rollDice: function () {
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    rollDice: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const activePlayer = getActivePlayer();
         if (!activePlayer || activePlayer.accId !== myAccountId) return;
         if (this.isRolling || gameState.isEnded) return;
@@ -231,7 +275,11 @@ GameRegistry.chinchiguti = {
         this.rollAnimTimer = setTimeout(() => { this.finalizeRoll(); }, 900);
     },
 
+<<<<<<< HEAD
     playRollingAnimation: function (diceCount) {
+=======
+    playRollingAnimation: function(diceCount) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const container = document.getElementById('chinchiguti-dice-container');
         if (!container) return;
 
@@ -264,7 +312,11 @@ GameRegistry.chinchiguti = {
         }, 850);
     },
 
+<<<<<<< HEAD
     finalizeRoll: function () {
+=======
+    finalizeRoll: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const myStats = gameState.chinchigutiStats[myAccountId];
         if (!myStats) { this.isRolling = false; return; }
 
@@ -288,7 +340,11 @@ GameRegistry.chinchiguti = {
             }
 
             this.isRolling = false;
+<<<<<<< HEAD
             broadcastGameSync();
+=======
+            broadcast({ type: 'SYNC_GAME', state: gameState });
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             syncGameUI();
         };
 
@@ -303,7 +359,11 @@ GameRegistry.chinchiguti = {
     },
 
     // オール1演出中に、実際に揃った出目をそのまま表示する
+<<<<<<< HEAD
     showAllOnesResult: function (dice) {
+=======
+    showAllOnesResult: function(dice) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const container = document.getElementById('chinchiguti-dice-container');
         if (!container) return;
         this.applyContainerSize(container, dice.length);
@@ -316,7 +376,11 @@ GameRegistry.chinchiguti = {
         });
     },
 
+<<<<<<< HEAD
     showWinFlash: function () {
+=======
+    showWinFlash: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const flash = document.getElementById('chinchiguti-win-flash');
         if (!flash) return;
         flash.style.display = 'flex';
@@ -328,7 +392,11 @@ GameRegistry.chinchiguti = {
         setTimeout(() => { flash.style.display = 'none'; }, 1450);
     },
 
+<<<<<<< HEAD
     renderScoreboard: function () {
+=======
+    renderScoreboard: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const wrapper = document.getElementById('chinchiguti-scoreboard');
         if (!wrapper) return;
         wrapper.innerHTML = "";
@@ -342,7 +410,11 @@ GameRegistry.chinchiguti = {
 
             row.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+<<<<<<< HEAD
                     <span style="font-weight:bold; ${p.accId === myAccountId ? 'color:var(--accent-color);' : ''}">${escapeHtml(p.name)}${isTurn ? ' 🎲' : ''}${isWinner ? ' 🏆' : ''}</span>
+=======
+                    <span style="font-weight:bold; ${p.accId === myAccountId ? 'color:var(--accent-color);' : ''}">${p.name}${isTurn ? ' 🎲' : ''}${isWinner ? ' 🏆' : ''}</span>
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="color:#999; font-size:0.75rem;">挑戦回数: ${s.totalRolls}回</span>
@@ -352,7 +424,11 @@ GameRegistry.chinchiguti = {
         });
     },
 
+<<<<<<< HEAD
     renderFinalRanking: function () {
+=======
+    renderFinalRanking: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const wrap = document.getElementById('chinchiguti-final-ranking');
         if (!wrap) return;
         const ranked = [...gameState.roster].sort((a, b) => {
@@ -366,7 +442,11 @@ GameRegistry.chinchiguti = {
             return `<div class="chinchiguti-score-row ${isWinner ? 'finished' : ''}">
                 <div style="display:flex; align-items:center; gap:6px;">
                     <span class="chinchiguti-rank-num">${isWinner ? '🏆優勝' : '参加'}</span>
+<<<<<<< HEAD
                     <span style="font-weight:bold;">${escapeHtml(p.name)}</span>
+=======
+                    <span style="font-weight:bold;">${p.name}</span>
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="color:#999; font-size:0.75rem;">挑戦回数: ${s.totalRolls}回</span>
@@ -375,9 +455,23 @@ GameRegistry.chinchiguti = {
         }).join('');
     },
 
+<<<<<<< HEAD
     syncUI: function () {
         document.getElementById('game-title-label').textContent = "チンチ口";
         showGameBoard('chinchiguti-board-area');
+=======
+    syncUI: function() {
+        document.getElementById('game-title-label').textContent = "チンチ口";
+        const unoBoard = document.getElementById('uno-board-area');
+        if (unoBoard) unoBoard.classList.remove('active');
+        const drawBoard = document.getElementById('draw-board-area');
+        if (drawBoard) drawBoard.classList.remove('active');
+        const drawResult = document.getElementById('draw-result-area');
+        if (drawResult) drawResult.classList.remove('active');
+        const chinchiroBoard = document.getElementById('chinchiro-board-area');
+        if (chinchiroBoard) chinchiroBoard.classList.remove('active');
+        document.getElementById('chinchiguti-board-area').classList.add('active');
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
 
         const activePlayer = getActivePlayer();
         const isMyTurn = (activePlayer && activePlayer.accId === myAccountId);
@@ -457,4 +551,8 @@ GameRegistry.chinchiguti = {
 
         this.renderScoreboard();
     }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6

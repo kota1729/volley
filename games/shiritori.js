@@ -61,17 +61,28 @@ GameRegistry.shiritori = {
     scrollLeftStart: 0, scrollTopStart: 0, containerEl: null, pendingDrawActions: [], drawFlushHandle: null,
     drawUndoStack: [], drawRedoStack: [], lastKnownTurnIndex: -1, interactionMode: 'draw',
 
+<<<<<<< HEAD
     init: function () {
         this.canvas = document.getElementById('paint-canvas');
         this.containerEl = document.getElementById('canvas-view-container');
         if (!this.canvas) return;
+=======
+    init: function() {
+        this.canvas = document.getElementById('paint-canvas');
+        this.containerEl = document.getElementById('canvas-view-container');
+        if(!this.canvas) return;
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.ctx = this.canvas.getContext('2d');
         this.clearCanvasLocal();
         this.updateUndoRedoButtons();
         this.setupCanvasListeners();
     },
 
+<<<<<<< HEAD
     setupCanvasListeners: function () {
+=======
+    setupCanvasListeners: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const self = this;
         this.containerEl.addEventListener('mousedown', (e) => {
             if (self.interactionMode === 'move' || e.button === 2) {
@@ -82,7 +93,11 @@ GameRegistry.shiritori = {
             }
             const activePlayer = getActivePlayer();
             if (!gameState.isStarted || gameState.isEnded || !activePlayer || activePlayer.accId !== myAccountId) return;
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             const pos = self.getCanvasEventPos(e);
             if (self.currentTool === 'bucket') {
                 self.saveUndoSnapshot();
@@ -137,7 +152,11 @@ GameRegistry.shiritori = {
                 self.broadcastDrawAction({ action: 'dot', x: pos.x, y: pos.y, tool: self.currentTool, color: self.currentColor });
             }
         }, { passive: false });
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.containerEl.addEventListener('touchmove', (e) => {
             if (self.isDraggingCanvas) {
                 const t = e.touches[0];
@@ -156,7 +175,11 @@ GameRegistry.shiritori = {
         this.containerEl.addEventListener('touchend', () => { self.isDrawing = false; self.isDraggingCanvas = false; });
     },
 
+<<<<<<< HEAD
     handleData: function (data) {
+=======
+    handleData: function(data) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (data.type === 'REALTIME_DRAW_BATCH') {
             (data.actions || []).forEach(a => this.handleRemoteDrawAction(a));
         }
@@ -165,8 +188,13 @@ GameRegistry.shiritori = {
         }
     },
 
+<<<<<<< HEAD
     hostGame: function () {
         if (sortedPlayers.length < 2) { customAlert("2人以上のプレイヤーが必要です。"); return; }
+=======
+    hostGame: function() {
+        if(sortedPlayers.length < 2) { customAlert("2人以上のプレイヤーが必要です。"); return; }
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         gameState.isStarted = true;
         gameState.gameType = 'shiritori';
         gameState.roster = shufflePlayers(sortedPlayers.map(p => ({ accId: p.accId, name: p.name })));
@@ -180,11 +208,19 @@ GameRegistry.shiritori = {
         this.resetCanvasZoom();
         const wordInput = document.getElementById('inp-draw-word');
         if (wordInput) wordInput.value = "";
+<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
 
     setInteractionMode: function (mode) {
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    setInteractionMode: function(mode) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.interactionMode = mode;
         document.getElementById('mode-draw-btn').classList.toggle('active', mode === 'draw');
         document.getElementById('mode-move-btn').classList.toggle('active', mode === 'move');
@@ -195,17 +231,29 @@ GameRegistry.shiritori = {
         this.isDraggingCanvas = false;
     },
 
+<<<<<<< HEAD
     zoomCanvas: function (delta) {
+=======
+    zoomCanvas: function(delta) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.canvasZoom = Math.max(1, Math.min(3, Math.round((this.canvasZoom + delta) * 100) / 100));
         this.applyCanvasZoom();
     },
 
+<<<<<<< HEAD
     resetCanvasZoom: function () {
+=======
+    resetCanvasZoom: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.canvasZoom = 1;
         this.applyCanvasZoom();
     },
 
+<<<<<<< HEAD
     applyCanvasZoom: function () {
+=======
+    applyCanvasZoom: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!this.canvas) return;
         this.canvas.style.width = (this.canvasZoom * 100) + '%';
         this.canvas.style.height = (this.canvasZoom * 100) + '%';
@@ -217,7 +265,11 @@ GameRegistry.shiritori = {
         if (label) label.textContent = Math.round(this.canvasZoom * 100) + '%';
     },
 
+<<<<<<< HEAD
     getCanvasEventPos: function (clientXorEvent) {
+=======
+    getCanvasEventPos: function(clientXorEvent) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const rect = this.canvas.getBoundingClientRect();
         const cX = clientXorEvent.clientX !== undefined ? clientXorEvent.clientX : clientXorEvent.pageX;
         const cY = clientXorEvent.clientY !== undefined ? clientXorEvent.clientY : clientXorEvent.pageY;
@@ -227,14 +279,22 @@ GameRegistry.shiritori = {
         };
     },
 
+<<<<<<< HEAD
     drawDot: function (x, y) {
+=======
+    drawDot: function(x, y) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.ctx.beginPath();
         this.ctx.arc(x, y, (this.currentTool === 'eraser' ? 12 : 2.5), 0, Math.PI * 2);
         this.ctx.fillStyle = this.currentTool === 'eraser' ? '#ffffff' : this.currentColor;
         this.ctx.fill();
     },
 
+<<<<<<< HEAD
     drawSegments: function (x, y) {
+=======
+    drawSegments: function(x, y) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.ctx.beginPath(); this.ctx.moveTo(this.lastX, this.lastY); this.ctx.lineTo(x, y);
         if (this.currentTool === 'eraser') {
             this.ctx.strokeStyle = '#ffffff'; this.ctx.lineWidth = 24;
@@ -244,21 +304,33 @@ GameRegistry.shiritori = {
         this.ctx.lineCap = 'round'; this.ctx.lineJoin = 'round'; this.ctx.stroke();
     },
 
+<<<<<<< HEAD
     broadcastDrawAction: function (data) {
+=======
+    broadcastDrawAction: function(data) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.pendingDrawActions.push(data);
         if (this.drawFlushHandle === null) {
             this.drawFlushHandle = requestAnimationFrame(() => this.flushDrawActions());
         }
     },
 
+<<<<<<< HEAD
     flushDrawActions: function () {
+=======
+    flushDrawActions: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.drawFlushHandle = null;
         if (this.pendingDrawActions.length === 0) return;
         broadcast({ type: 'REALTIME_DRAW_BATCH', actions: this.pendingDrawActions });
         this.pendingDrawActions = [];
     },
 
+<<<<<<< HEAD
     handleRemoteDrawAction: function (remoteData) {
+=======
+    handleRemoteDrawAction: function(remoteData) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const activePlayer = getActivePlayer();
         if (!activePlayer || activePlayer.accId === myAccountId) return;
         if (remoteData.action === 'dot') {
@@ -277,6 +349,7 @@ GameRegistry.shiritori = {
         }
     },
 
+<<<<<<< HEAD
     setTool: function (tool) {
         this.currentTool = tool;
         document.querySelectorAll('#canvas-toolbar .tool-btn').forEach(btn => btn.classList.remove('active'));
@@ -289,34 +362,68 @@ GameRegistry.shiritori = {
         this.currentColor = color;
         document.querySelectorAll('.palette-color, .custom-picker-wrapper').forEach(p => p.classList.remove('active'));
         if (element) element.classList.add('active');
+=======
+    setTool: function(tool) {
+        this.currentTool = tool;
+        document.querySelectorAll('#canvas-toolbar .tool-btn').forEach(btn => btn.classList.remove('active'));
+        const target = document.getElementById(`tool-${tool}`);
+        if(target) target.classList.add('active');
+        this.setInteractionMode('draw');
+    },
+
+    setColor: function(color, element) {
+        this.currentColor = color;
+        document.querySelectorAll('.palette-color, .custom-picker-wrapper').forEach(p => p.classList.remove('active'));
+        if(element) element.classList.add('active');
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (this.currentTool === 'eraser') this.setTool('pencil');
         this.setInteractionMode('draw');
     },
 
+<<<<<<< HEAD
     setCustomColor: function (color) {
+=======
+    setCustomColor: function(color) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.currentColor = color;
         const wrapper = document.getElementById('custom-color-wrapper');
         this.setColor(color, wrapper);
     },
 
+<<<<<<< HEAD
     clearCanvasLocal: function () {
+=======
+    clearCanvasLocal: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!this.canvas) return;
         this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     },
 
+<<<<<<< HEAD
     resetDrawHistory: function () {
+=======
+    resetDrawHistory: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.drawUndoStack = []; this.drawRedoStack = [];
         this.updateUndoRedoButtons();
     },
 
+<<<<<<< HEAD
     clearCanvasSync: function () {
+=======
+    clearCanvasSync: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.saveUndoSnapshot();
         this.clearCanvasLocal();
         this.broadcastDrawAction({ action: 'clear' });
     },
 
+<<<<<<< HEAD
     saveUndoSnapshot: function () {
+=======
+    saveUndoSnapshot: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!this.canvas) return;
         this.drawUndoStack.push(this.canvas.toDataURL());
         if (this.drawUndoStack.length > 30) this.drawUndoStack.shift();
@@ -324,7 +431,11 @@ GameRegistry.shiritori = {
         this.updateUndoRedoButtons();
     },
 
+<<<<<<< HEAD
     restoreCanvasFromDataUrl: function (dataUrl) {
+=======
+    restoreCanvasFromDataUrl: function(dataUrl) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const img = new Image();
         img.onload = () => {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -333,7 +444,11 @@ GameRegistry.shiritori = {
         img.src = dataUrl;
     },
 
+<<<<<<< HEAD
     undoDraw: function () {
+=======
+    undoDraw: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (this.drawUndoStack.length === 0) return;
         this.drawRedoStack.push(this.canvas.toDataURL());
         const prevState = this.drawUndoStack.pop();
@@ -342,7 +457,11 @@ GameRegistry.shiritori = {
         setTimeout(() => { broadcast({ type: 'CANVAS_FULL_SYNC', dataUrl: this.canvas.toDataURL() }); }, 50);
     },
 
+<<<<<<< HEAD
     redoDraw: function () {
+=======
+    redoDraw: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (this.drawRedoStack.length === 0) return;
         this.drawUndoStack.push(this.canvas.toDataURL());
         const nextState = this.drawRedoStack.pop();
@@ -351,14 +470,22 @@ GameRegistry.shiritori = {
         setTimeout(() => { broadcast({ type: 'CANVAS_FULL_SYNC', dataUrl: this.canvas.toDataURL() }); }, 50);
     },
 
+<<<<<<< HEAD
     updateUndoRedoButtons: function () {
+=======
+    updateUndoRedoButtons: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const undoBtn = document.getElementById('btn-undo');
         const redoBtn = document.getElementById('btn-redo');
         if (undoBtn) undoBtn.disabled = this.drawUndoStack.length === 0;
         if (redoBtn) redoBtn.disabled = this.drawRedoStack.length === 0;
     },
 
+<<<<<<< HEAD
     floodFill: function (startX, startY, fillColor) {
+=======
+    floodFill: function(startX, startY, fillColor) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const targetColor = this.ctx.getImageData(startX, startY, 1, 1).data;
         const fillRGB = this.hexToRgb(fillColor);
         if (this.matchColor(targetColor, fillRGB)) return;
@@ -367,12 +494,21 @@ GameRegistry.shiritori = {
         const data = imageData.data;
         const width = this.canvas.width; const height = this.canvas.height;
         const queue = [[startX, startY]];
+<<<<<<< HEAD
 
         while (queue.length > 0) {
             const [cx, cy] = queue.pop();
             const idx = (cy * width + cx) * 4;
             if (this.matchColor([data[idx], data[idx + 1], data[idx + 2]], targetColor)) {
                 data[idx] = fillRGB[0]; data[idx + 1] = fillRGB[1]; data[idx + 2] = fillRGB[2];
+=======
+        
+        while (queue.length > 0) {
+            const [cx, cy] = queue.pop();
+            const idx = (cy * width + cx) * 4;
+            if (this.matchColor([data[idx], data[idx+1], data[idx+2]], targetColor)) {
+                data[idx] = fillRGB[0]; data[idx+1] = fillRGB[1]; data[idx+2] = fillRGB[2];
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 if (cx > 0) queue.push([cx - 1, cy]);
                 if (cx < width - 1) queue.push([cx + 1, cy]);
                 if (cy > 0) queue.push([cx, cy - 1]);
@@ -382,15 +518,26 @@ GameRegistry.shiritori = {
         this.ctx.putImageData(imageData, 0, 0);
     },
 
+<<<<<<< HEAD
     matchColor: function (c1, c2) { return Math.abs(c1[0] - c2[0]) < 10 && Math.abs(c1[1] - c2[1]) < 10 && Math.abs(c1[2] - c2[2]) < 10; },
     hexToRgb: function (hex) { const bigint = parseInt(hex.slice(1), 16); return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255]; },
 
     isOnlyHiragana: function (str) {
+=======
+    matchColor: function(c1, c2) { return Math.abs(c1[0] - c2[0]) < 10 && Math.abs(c1[1] - c2[1]) < 10 && Math.abs(c1[2] - c2[2]) < 10; },
+    hexToRgb: function(hex) { const bigint = parseInt(hex.slice(1), 16); return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255]; },
+
+    isOnlyHiragana: function(str) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const cleanStr = str.replace(/\s+/g, '');
         return /^[\u3041-\u3096ー]+$/.test(cleanStr);
     },
 
+<<<<<<< HEAD
     submitDrawTurn: function () {
+=======
+    submitDrawTurn: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const activePlayer = getActivePlayer();
         if (!activePlayer || activePlayer.accId !== myAccountId) return;
 
@@ -404,13 +551,18 @@ GameRegistry.shiritori = {
 
         const dataUrl = this.canvas.toDataURL('image/jpeg', 0.6);
         gameState.history.push({ painter: myName, img: dataUrl, word: word });
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (this.endsWithN(word)) {
             customAlert("「ん」がついたため、ここで自動的にしりとり終了となります！");
             gameState.isEnded = true;
         } else {
             gameState.turnIndex = (gameState.turnIndex + 1) % getRoster().length;
         }
+<<<<<<< HEAD
 
         this.clearCanvasLocal(); this.resetDrawHistory(); this.resetCanvasZoom(); this.setInteractionMode('draw');
         wordInput.value = "";
@@ -419,6 +571,16 @@ GameRegistry.shiritori = {
     },
 
     endDrawGame: function () {
+=======
+        
+        this.clearCanvasLocal(); this.resetDrawHistory(); this.resetCanvasZoom(); this.setInteractionMode('draw');
+        wordInput.value = "";
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    endDrawGame: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const activePlayer = getActivePlayer();
         if (activePlayer && activePlayer.accId === myAccountId) {
             const wordInput = document.getElementById('inp-draw-word');
@@ -433,11 +595,19 @@ GameRegistry.shiritori = {
             wordInput.value = "";
         }
         gameState.isEnded = true; this.resetCanvasZoom();
+<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
 
     renderResults: function () {
+=======
+        broadcast({ type: 'SYNC_GAME', state: gameState });
+        syncGameUI();
+    },
+
+    renderResults: function() {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const resultArea = document.getElementById('draw-result-area');
         resultArea.innerHTML = "";
         const { results, allOk } = this.judgeShiritori(gameState.history);
@@ -459,11 +629,19 @@ GameRegistry.shiritori = {
             div.className = 'result-item';
             div.style.border = `2px solid ${isOk ? 'var(--success-color)' : 'var(--danger-color)'}`;
             div.innerHTML = `
+<<<<<<< HEAD
                 <div style="font-weight:bold; color:var(--accent-color); font-size:0.9rem;">第 ${idx + 1} 走者: ${escapeHtml(item.painter)}</div>
                 <img src="${escapeHtml(item.img)}" class="result-img" alt="絵"/>
                 <div style="font-size:1rem; font-weight:bold; margin-top:4px;">「${escapeHtml(item.word) || '(名前未入力)'}」</div>
                 <div style="font-size:0.75rem; margin-top:4px; color:${isOk ? 'var(--success-color)' : 'var(--danger-color)'};">
                     ${isOk ? '✅ OK' : '⚠️ ' + escapeHtml(item.issues.join(' / '))}
+=======
+                <div style="font-weight:bold; color:var(--accent-color); font-size:0.9rem;">第 ${idx + 1} 走者: ${item.painter}</div>
+                <img src="${item.img}" class="result-img" alt="絵"/>
+                <div style="font-size:1rem; font-weight:bold; margin-top:4px;">「${item.word || '(名前未入力)'}」</div>
+                <div style="font-size:0.75rem; margin-top:4px; color:${isOk ? 'var(--success-color)' : 'var(--danger-color)'};">
+                    ${isOk ? '✅ OK' : '⚠️ ' + item.issues.join(' / ')}
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 </div>
             `;
             resultArea.appendChild(div);
@@ -471,6 +649,7 @@ GameRegistry.shiritori = {
 
         const actionWrap = document.createElement('div');
         actionWrap.style.cssText = 'display:flex; flex-direction:column; gap:8px; margin-top:15px;';
+<<<<<<< HEAD
 
         const restartBtn = document.createElement('button');
         restartBtn.className = 'btn btn-success'; restartBtn.textContent = '🔄 もう一度プレイする (新しいゲーム)';
@@ -480,11 +659,26 @@ GameRegistry.shiritori = {
         lobbyBtn.className = 'btn'; lobbyBtn.textContent = 'ロビーへ戻る';
         lobbyBtn.onclick = () => { sendReturnToLobby(); };
 
+=======
+        
+        const restartBtn = document.createElement('button');
+        restartBtn.className = 'btn btn-success'; restartBtn.textContent = '🔄 もう一度プレイする (新しいゲーム)';
+        restartBtn.onclick = () => { GameRegistry.shiritori.hostGame(); };
+        
+        const lobbyBtn = document.createElement('button');
+        lobbyBtn.className = 'btn'; lobbyBtn.textContent = 'ロビーへ戻る';
+        lobbyBtn.onclick = () => { sendReturnToLobby(); };
+        
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         actionWrap.appendChild(restartBtn); actionWrap.appendChild(lobbyBtn);
         resultArea.appendChild(actionWrap);
     },
 
+<<<<<<< HEAD
     judgeShiritori: function (history) {
+=======
+    judgeShiritori: function(history) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const results = history.map(item => ({ ...item, issues: [] }));
         const seen = new Set();
         results.forEach((item, i) => {
@@ -509,11 +703,16 @@ GameRegistry.shiritori = {
         return { results, allOk };
     },
 
+<<<<<<< HEAD
     katakanaToHiragana: function (ch) {
+=======
+    katakanaToHiragana: function(ch) {
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const code = ch.charCodeAt(0);
         if (code >= 0x30A1 && code <= 0x30F6) return String.fromCharCode(code - 0x60);
         return ch;
     },
+<<<<<<< HEAD
     normalizeKanaChar: function (ch) {
         const smallMap = { 'ぁ': 'あ', 'ぃ': 'い', 'ぅ': 'う', 'ぇ': 'え', 'ぉ': 'お', 'っ': 'つ', 'ゃ': 'や', 'ゅ': 'ゆ', 'ょ': 'よ', 'ゎ': 'わ' };
         return smallMap[ch] || ch;
@@ -537,6 +736,40 @@ GameRegistry.shiritori = {
             document.getElementById('game-info').textContent = "🎉 答え合わせ！みんなでしりとりが繋がっているか確認しましょう！";
             this.renderResults();
         } else {
+=======
+    normalizeKanaChar: function(ch) {
+        const smallMap = { 'ぁ':'あ','ぃ':'い','ぅ':'う','ぇ':'え','ぉ':'お','っ':'つ','ゃ':'や','ゅ':'ゆ','ょ':'よ','ゎ':'わ' };
+        return smallMap[ch] || ch;
+    },
+    normalizeWordChars: function(word) { return [...(word || '').trim()].map(this.katakanaToHiragana).map(this.normalizeKanaChar); },
+    getFirstSound: function(word) { return this.normalizeWordChars(word)[0] || ''; },
+    getLastSound: function(word) {
+        const chars = this.normalizeWordChars(word);
+        let idx = chars.length - 1;
+        if (idx < 0) return '';
+        if (chars[idx] === 'ー' && idx > 0) idx -= 1; 
+        return chars[idx];
+    },
+    endsWithN: function(word) { const chars = this.normalizeWordChars(word); return chars[chars.length - 1] === 'ん'; },
+
+    syncUI: function() {
+        document.getElementById('game-title-label').textContent = "お絵描きしりとりルーム";
+        const unoBoard = document.getElementById('uno-board-area');
+        if(unoBoard) unoBoard.classList.remove('active');
+        const chinchiroBoard = document.getElementById('chinchiro-board-area');
+        if(chinchiroBoard) chinchiroBoard.classList.remove('active');
+        const chinchigutiBoard = document.getElementById('chinchiguti-board-area');
+        if(chinchigutiBoard) chinchigutiBoard.classList.remove('active');
+        
+        if (gameState.isEnded) {
+            document.getElementById('draw-board-area').classList.remove('active');
+            document.getElementById('draw-result-area').classList.add('active');
+            document.getElementById('game-info').textContent = "🎉 答え合わせ！みんなでしりとりが繋がっているか確認しましょう！";
+            this.renderResults();
+        } else {
+            document.getElementById('draw-board-area').classList.add('active');
+            document.getElementById('draw-result-area').classList.remove('active');
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
 
             if (this.lastKnownTurnIndex !== gameState.turnIndex) {
                 this.clearCanvasLocal(); this.resetDrawHistory(); this.resetCanvasZoom();
@@ -547,7 +780,11 @@ GameRegistry.shiritori = {
             const hintImageView = document.getElementById('hint-image-view');
             if (gameState.history.length > 0) {
                 const lastDraw = gameState.history[gameState.history.length - 1];
+<<<<<<< HEAD
                 hintText.innerHTML = `前の走者 (<span style="color:#ffaa00;">${escapeHtml(lastDraw.painter)}</span>) が描いた絵：`;
+=======
+                hintText.innerHTML = `前の走者 (<span style="color:#ffaa00;">${lastDraw.painter}</span>) が描いた絵：`;
+>>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 hintImageView.src = lastDraw.img; hintImageView.style.display = "block";
             } else {
                 hintText.textContent = (getActivePlayer()?.accId === myAccountId)
