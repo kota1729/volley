@@ -74,21 +74,12 @@ GameRegistry.chinchiro = {
 
     // 各面(1〜6)を正面に向けるために立方体へ加える回転角(対面の合計は7になる配置)
     FACE_ROTATION: {
-<<<<<<< HEAD
         1: { x: 0, y: 0 },
         2: { x: -90, y: 0 },
         3: { x: 0, y: -90 },
         4: { x: 0, y: 90 },
         5: { x: 90, y: 0 },
         6: { x: 0, y: 180 }
-=======
-        1: { x: 0,   y: 0 },
-        2: { x: -90, y: 0 },
-        3: { x: 0,   y: -90 },
-        4: { x: 0,   y: 90 },
-        5: { x: 90,  y: 0 },
-        6: { x: 0,   y: 180 }
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
     },
 
     // 3x3グリッド(1〜9)のうち、どの位置に目(ピップ)を置くか
@@ -101,11 +92,7 @@ GameRegistry.chinchiro = {
         6: [1, 3, 4, 6, 7, 9]
     },
 
-<<<<<<< HEAD
     init: function () {
-=======
-    init: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         this.isRolling = false;
         this.rollAnimTimer = null;
         this.rollingInterval = null;
@@ -116,11 +103,7 @@ GameRegistry.chinchiro = {
     },
 
     // サイコロの1面分のHTML(ピップ配置込み)を作る
-<<<<<<< HEAD
     buildFaceHTML: function (n) {
-=======
-    buildFaceHTML: function(n) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const onSet = this.PIP_LAYOUT[n];
         let dots = '';
         for (let pos = 1; pos <= 9; pos++) {
@@ -130,11 +113,7 @@ GameRegistry.chinchiro = {
     },
 
     // 立方体の6面をDOMに組み立てる(初回のみ)
-<<<<<<< HEAD
     buildCube: function (cubeEl) {
-=======
-    buildCube: function(cubeEl) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         cubeEl.innerHTML = '';
         [1, 2, 3, 4, 5, 6].forEach(n => {
             const face = document.createElement('div');
@@ -147,32 +126,20 @@ GameRegistry.chinchiro = {
     },
 
     // UNOのDraw2/4のようなリアルタイム系イベント。他プレイヤーへ「振っている最中」の演出を伝える
-<<<<<<< HEAD
     handleData: function (data) {
-=======
-    handleData: function(data) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (data.type === 'CHINCHIRO_ROLLING') {
             this.playRollingAnimation();
         }
     },
 
-<<<<<<< HEAD
     diceFace: function (n) {
-=======
-    diceFace: function(n) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
         return faces[Math.max(1, Math.min(6, n)) - 1];
     },
 
     // サイコロの目を要素に反映する共通処理。立方体を回転させて該当の面を正面に向ける
     // fast=true の場合は転がっている最中の細かい切り替え用に素早く回転させる
-<<<<<<< HEAD
     applyFace: function (el, n, fast) {
-=======
-    applyFace: function(el, n, fast) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (!el) return;
         el.classList.remove('unrolled');
         const cube = el.querySelector('.chinchiro-cube');
@@ -189,11 +156,7 @@ GameRegistry.chinchiro = {
     },
 
     // 3つのサイコロの目から役を判定する
-<<<<<<< HEAD
     judgeDice: function (dice) {
-=======
-    judgeDice: function(dice) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const sorted = [...dice].sort((a, b) => a - b);
         const [a, b, c] = sorted;
 
@@ -210,11 +173,7 @@ GameRegistry.chinchiro = {
         return { label: '目なし', tier: 0, score: -1 };
     },
 
-<<<<<<< HEAD
     hostGame: function () {
-=======
-    hostGame: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         if (sortedPlayers.length < 2) { customAlert("2人以上のプレイヤーが必要です。"); return; }
         gameState.isStarted = true; gameState.gameType = 'chinchiro';
         let roster = shufflePlayers(sortedPlayers.map(p => ({ accId: p.accId, name: p.name })));
@@ -230,19 +189,11 @@ GameRegistry.chinchiro = {
         gameState.isEnded = false; gameState.winner = null; gameState.winnerHandText = '';
         this.isRolling = false;
 
-<<<<<<< HEAD
         broadcastGameSync();
         syncGameUI();
     },
 
     rollDice: function () {
-=======
-        broadcast({ type: 'SYNC_GAME', state: gameState });
-        syncGameUI();
-    },
-
-    rollDice: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const activePlayer = getActivePlayer();
         if (!activePlayer || activePlayer.accId !== myAccountId) return;
         if (this.isRolling) return;
@@ -260,11 +211,7 @@ GameRegistry.chinchiro = {
         this.rollAnimTimer = setTimeout(() => { this.finalizeRoll(); }, 900);
     },
 
-<<<<<<< HEAD
     playRollingAnimation: function () {
-=======
-    playRollingAnimation: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const dieEls = [0, 1, 2].map(i => document.getElementById(`chinchiro-die-${i}`));
         dieEls.forEach(el => { if (el) { el.classList.remove('landed'); el.classList.add('rolling'); } });
 
@@ -286,11 +233,7 @@ GameRegistry.chinchiro = {
         }, 850);
     },
 
-<<<<<<< HEAD
     finalizeRoll: function () {
-=======
-    finalizeRoll: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const myResult = gameState.chinchiroResults[myAccountId];
         if (!myResult) { this.isRolling = false; return; }
 
@@ -313,11 +256,7 @@ GameRegistry.chinchiro = {
             }
 
             this.isRolling = false;
-<<<<<<< HEAD
             broadcastGameSync();
-=======
-            broadcast({ type: 'SYNC_GAME', state: gameState });
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
             syncGameUI();
         };
 
@@ -332,11 +271,7 @@ GameRegistry.chinchiro = {
     },
 
     // ピンゾロ演出中に実際の出目をお皿に表示する
-<<<<<<< HEAD
     showDiceResult: function (dice) {
-=======
-    showDiceResult: function(dice) {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         [0, 1, 2].forEach(i => {
             const el = document.getElementById(`chinchiro-die-${i}`);
             if (!el) return;
@@ -346,11 +281,7 @@ GameRegistry.chinchiro = {
         });
     },
 
-<<<<<<< HEAD
     showPinzoroFlash: function () {
-=======
-    showPinzoroFlash: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const flash = document.getElementById('chinchiro-pinzoro-flash');
         if (!flash) return;
         flash.style.display = 'flex';
@@ -363,22 +294,14 @@ GameRegistry.chinchiro = {
         setTimeout(() => { flash.style.display = 'none'; }, 1350);
     },
 
-<<<<<<< HEAD
     advanceTurn: function () {
-=======
-    advanceTurn: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         gameState.turnIndex += 1;
         if (gameState.turnIndex >= gameState.roster.length) {
             this.finishGame();
         }
     },
 
-<<<<<<< HEAD
     finishGame: function () {
-=======
-    finishGame: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         let maxScore = -1;
         gameState.roster.forEach(p => {
             const r = gameState.chinchiroResults[p.accId];
@@ -390,11 +313,7 @@ GameRegistry.chinchiro = {
         gameState.winnerHandText = winners.length ? gameState.chinchiroResults[winners[0].accId].label : '-';
     },
 
-<<<<<<< HEAD
     renderScoreboard: function () {
-=======
-    renderScoreboard: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const wrapper = document.getElementById('chinchiro-scoreboard');
         if (!wrapper) return;
         wrapper.innerHTML = "";
@@ -414,11 +333,7 @@ GameRegistry.chinchiro = {
 
             row.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-<<<<<<< HEAD
                     <span style="font-weight:bold; ${p.accId === myAccountId ? 'color:var(--accent-color);' : ''}">${escapeHtml(p.name)}${isTurn ? ' 🎲' : ''}</span>
-=======
-                    <span style="font-weight:bold; ${p.accId === myAccountId ? 'color:var(--accent-color);' : ''}">${p.name}${isTurn ? ' 🎲' : ''}</span>
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     ${diceHtml}
@@ -429,11 +344,7 @@ GameRegistry.chinchiro = {
         });
     },
 
-<<<<<<< HEAD
     renderFinalRanking: function () {
-=======
-    renderFinalRanking: function() {
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
         const wrap = document.getElementById('chinchiro-final-ranking');
         if (!wrap) return;
         const ranked = [...gameState.roster].sort((a, b) => {
@@ -447,11 +358,7 @@ GameRegistry.chinchiro = {
             return `<div class="chinchiro-score-row ${i === 0 ? 'finished' : ''}">
                 <div style="display:flex; align-items:center; gap:6px;">
                     <span class="chinchiro-rank-num">${i + 1}位</span>
-<<<<<<< HEAD
                     <span style="font-weight:bold;">${escapeHtml(p.name)}</span>
-=======
-                    <span style="font-weight:bold;">${p.name}</span>
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
                 </div>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div class="chinchiro-mini-dice">${diceArr.map(d => `<div class="chinchiro-mini-die ${d === 1 ? 'die-one' : ''}">${this.diceFace(d)}</div>`).join('')}</div>
@@ -461,23 +368,9 @@ GameRegistry.chinchiro = {
         }).join('');
     },
 
-<<<<<<< HEAD
     syncUI: function () {
         document.getElementById('game-title-label').textContent = "チンチロリン";
         showGameBoard('chinchiro-board-area');
-=======
-    syncUI: function() {
-        document.getElementById('game-title-label').textContent = "チンチロリン";
-        const unoBoard = document.getElementById('uno-board-area');
-        if (unoBoard) unoBoard.classList.remove('active');
-        const drawBoard = document.getElementById('draw-board-area');
-        if (drawBoard) drawBoard.classList.remove('active');
-        const drawResult = document.getElementById('draw-result-area');
-        if (drawResult) drawResult.classList.remove('active');
-        const chinchigutiBoard = document.getElementById('chinchiguti-board-area');
-        if (chinchigutiBoard) chinchigutiBoard.classList.remove('active');
-        document.getElementById('chinchiro-board-area').classList.add('active');
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
 
         const activePlayer = getActivePlayer();
         const isMyTurn = (activePlayer && activePlayer.accId === myAccountId);
@@ -546,8 +439,4 @@ GameRegistry.chinchiro = {
 
         this.renderScoreboard();
     }
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 068bf5dd2faec4f321f01ef5ba027cf1860124e6
