@@ -1,6 +1,8 @@
 // GameRegistryにチンチロ(チンチロリン)の機能と表示パーツをすべて登録
+// ゲームのルール・進行・ネットワーク同期のロジックは元のバージョンと同一。
+// 変更したのは「サイコロの見た目」だけで、CSSの3D transformで作っていた立方体を
+// Phaserのキャンバス描画(2Dのお面切り替え+ゆれ/バウンドのtween)に置き換えている。
 GameRegistry.chinchiro = {
-    // 既存のHTMLテンプレート(uno/shiritoriと同じ構造パターンに合わせる)
     template: `
         <div class="chinchiro-board" id="chinchiro-board-area">
             <div class="spectator-banner" id="chinchiro-spectator-banner" style="display:none;">👀 観戦中：このゲームが終わるまでお待ちください</div>
@@ -19,18 +21,7 @@ GameRegistry.chinchiro = {
 
                 <div class="dice-stage" id="chinchiro-dice-stage">
                     <div class="chinchiro-dish">
-                        <div class="chinchiro-die unrolled" id="chinchiro-die-0">
-                            <div class="chinchiro-cube" id="chinchiro-cube-0"></div>
-                            <div class="chinchiro-die-placeholder">-</div>
-                        </div>
-                        <div class="chinchiro-die unrolled" id="chinchiro-die-1">
-                            <div class="chinchiro-cube" id="chinchiro-cube-1"></div>
-                            <div class="chinchiro-die-placeholder">-</div>
-                        </div>
-                        <div class="chinchiro-die unrolled" id="chinchiro-die-2">
-                            <div class="chinchiro-cube" id="chinchiro-cube-2"></div>
-                            <div class="chinchiro-die-placeholder">-</div>
-                        </div>
+                        <div id="chinchiro-phaser-container" style="position:absolute; inset:8px; border-radius:50%; overflow:hidden;"></div>
                         <div class="chinchiro-pinzoro-flash" id="chinchiro-pinzoro-flash"><span>🔥 ピンゾロ！！ 🔥</span></div>
                     </div>
                 </div>
@@ -71,16 +62,8 @@ GameRegistry.chinchiro = {
     isRolling: false,
     rollAnimTimer: null,
     rollingInterval: null,
-
-    // 各面(1〜6)を正面に向けるために立方体へ加える回転角(対面の合計は7になる配置)
-    FACE_ROTATION: {
-        1: { x: 0, y: 0 },
-        2: { x: -90, y: 0 },
-        3: { x: 0, y: -90 },
-        4: { x: 0, y: 90 },
-        5: { x: 90, y: 0 },
-        6: { x: 0, y: 180 }
-    },
+    diceScene: null,
+    phaserGame: null,
 
     // 3x3グリッド(1〜9)のうち、どの位置に目(ピップ)を置くか
     PIP_LAYOUT: {
@@ -96,33 +79,116 @@ GameRegistry.chinchiro = {
         this.isRolling = false;
         this.rollAnimTimer = null;
         this.rollingInterval = null;
-        [0, 1, 2].forEach(i => {
-            const cube = document.getElementById(`chinchiro-cube-${i}`);
-            if (cube) this.buildCube(cube);
-        });
+        this.buildPhaserDice();
     },
 
-    // サイコロの1面分のHTML(ピップ配置込み)を作る
-    buildFaceHTML: function (n) {
-        const onSet = this.PIP_LAYOUT[n];
-        let dots = '';
-        for (let pos = 1; pos <= 9; pos++) {
-            dots += `<span class="chinchiro-pip${onSet.includes(pos) ? ' on' : ''}"></span>`;
+    // Phaserで「お皿の中の3個のサイコロ」をまとめて構築する。ページ読み込み時に1度だけ作り、
+    // 以後はロビーとゲーム画面を行き来してもこのインスタンスを使い回す(軽量なので破棄不要)
+    buildPhaserDice: function () {
+        const self = this;
+        const container = document.getElementById('chinchiro-phaser-container');
+        if (!container || typeof Phaser === 'undefined') return;
+
+        const WIDTH = 280, HEIGHT = 180;
+        const DIE_SIZE = 62;
+        const positions = [
+            { x: 96, y: 118, rot: -8 },
+            { x: 150, y: 66, rot: 4 },
+            { x: 206, y: 118, rot: 10 }
+        ];
+
+        function buildFace(scene, n, size) {
+            const c = scene.add.container(0, 0);
+            const g = scene.add.graphics();
+            g.fillStyle(0xf2f2f2, 1);
+            g.fillRoundedRect(-size / 2, -size / 2, size, size, 9);
+            g.lineStyle(3, 0x3b4260, 1);
+            g.strokeRoundedRect(-size / 2, -size / 2, size, size, 9);
+            c.add(g);
+            const layout = self.PIP_LAYOUT[n];
+            const gridPos = { 1: [-1, -1], 2: [0, -1], 3: [1, -1], 4: [-1, 0], 5: [0, 0], 6: [1, 0], 7: [-1, 1], 8: [0, 1], 9: [1, 1] };
+            const gap = size / 3.3;
+            const pipColor = (n === 1) ? 0xd81f2a : 0x222222;
+            layout.forEach(pos => {
+                const [gx, gy] = gridPos[pos];
+                const pip = scene.add.circle(gx * gap, gy * gap, size * 0.095, pipColor);
+                c.add(pip);
+            });
+            return c;
         }
-        return `<div class="chinchiro-pip-grid">${dots}</div>`;
-    },
 
-    // 立方体の6面をDOMに組み立てる(初回のみ)
-    buildCube: function (cubeEl) {
-        cubeEl.innerHTML = '';
-        [1, 2, 3, 4, 5, 6].forEach(n => {
-            const face = document.createElement('div');
-            face.className = `chinchiro-die-face cf-${n}`;
-            face.innerHTML = this.buildFaceHTML(n);
-            cubeEl.appendChild(face);
+        function create() {
+            const scene = this;
+            scene.dice = [];
+            positions.forEach((pos, i) => {
+                const root = scene.add.container(pos.x, pos.y);
+                root.setAngle(pos.rot);
+                const faces = {};
+                for (let n = 1; n <= 6; n++) {
+                    const f = buildFace(scene, n, DIE_SIZE);
+                    f.setVisible(false);
+                    root.add(f);
+                    faces[n] = f;
+                }
+                const placeholder = scene.add.text(0, 0, '-', { fontSize: '30px', fontFamily: 'Arial', color: '#6b6b6b' }).setOrigin(0.5);
+                root.add(placeholder);
+                scene.dice.push({ root, faces, placeholder, baseRot: pos.rot, currentFace: null });
+            });
+
+            scene.showUnrolled = function (i) {
+                const d = scene.dice[i];
+                if (!d) return;
+                Object.values(d.faces).forEach(f => f.setVisible(false));
+                d.placeholder.setVisible(true);
+                d.currentFace = null;
+            };
+
+            scene.showFace = function (i, n, animateLanding) {
+                const d = scene.dice[i];
+                if (!d) return;
+                n = Math.max(1, Math.min(6, n));
+                Object.values(d.faces).forEach(f => f.setVisible(false));
+                d.placeholder.setVisible(false);
+                d.faces[n].setVisible(true);
+                d.currentFace = n;
+                if (animateLanding) {
+                    d.root.setScale(1);
+                    scene.tweens.add({ targets: d.root, scaleX: 1.16, scaleY: 1.16, duration: 130, yoyo: true, ease: 'Quad.Out' });
+                }
+            };
+
+            scene.startRolling = function () {
+                scene.dice.forEach(d => {
+                    scene.tweens.add({ targets: d.root, angle: d.baseRot + 14, duration: 90, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+                });
+            };
+
+            scene.stopRolling = function () {
+                scene.dice.forEach(d => {
+                    scene.tweens.killTweensOf(d.root);
+                    d.root.setAngle(d.baseRot);
+                    d.root.setScale(1);
+                });
+            };
+
+            // 初期状態は全部「未挑戦(-)」
+            scene.dice.forEach((d, i) => scene.showUnrolled(i));
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            parent: 'chinchiro-phaser-container',
+            width: WIDTH,
+            height: HEIGHT,
+            transparent: true,
+            scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+            scene: { create }
+        };
+
+        this.phaserGame = new Phaser.Game(config);
+        this.phaserGame.events.once('ready', () => {
+            this.diceScene = this.phaserGame.scene.getScenes(true)[0];
         });
-        const rot = this.FACE_ROTATION[1];
-        cubeEl.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
     },
 
     // UNOのDraw2/4のようなリアルタイム系イベント。他プレイヤーへ「振っている最中」の演出を伝える
@@ -135,24 +201,6 @@ GameRegistry.chinchiro = {
     diceFace: function (n) {
         const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
         return faces[Math.max(1, Math.min(6, n)) - 1];
-    },
-
-    // サイコロの目を要素に反映する共通処理。立方体を回転させて該当の面を正面に向ける
-    // fast=true の場合は転がっている最中の細かい切り替え用に素早く回転させる
-    applyFace: function (el, n, fast) {
-        if (!el) return;
-        el.classList.remove('unrolled');
-        const cube = el.querySelector('.chinchiro-cube');
-        if (!cube) return;
-        n = Math.max(1, Math.min(6, n));
-        const rot = this.FACE_ROTATION[n];
-        // 転がっている最中は素早く切り替え、結果が確定した時はゆっくり着地させる
-        cube.style.transition = fast
-            ? 'transform 0.1s linear'
-            : 'transform 0.4s cubic-bezier(.3,1.4,.4,1)';
-        // 転がっている最中は毎回1回転余分に回して、常に同じ方向へ勢いよく回り続けているように見せる
-        const spin = fast ? (Math.random() < 0.5 ? -360 : 360) : 0;
-        cube.style.transform = `rotateX(${rot.x + (fast ? spin : 0)}deg) rotateY(${rot.y + (fast ? spin : 0)}deg)`;
     },
 
     // 3つのサイコロの目から役を判定する
@@ -177,7 +225,6 @@ GameRegistry.chinchiro = {
         if (sortedPlayers.length < 2) { customAlert("2人以上のプレイヤーが必要です。"); return; }
         gameState.isStarted = true; gameState.gameType = 'chinchiro';
         let roster = shufflePlayers(sortedPlayers.map(p => ({ accId: p.accId, name: p.name })));
-        // 最初に番が回ってくる人を決めたら、その人がプレイヤー状況の一番上に来るよう並び替える
         const startIdx = Math.floor(Math.random() * roster.length);
         roster = roster.slice(startIdx).concat(roster.slice(0, startIdx));
         gameState.roster = roster;
@@ -212,24 +259,18 @@ GameRegistry.chinchiro = {
     },
 
     playRollingAnimation: function () {
-        const dieEls = [0, 1, 2].map(i => document.getElementById(`chinchiro-die-${i}`));
-        dieEls.forEach(el => { if (el) { el.classList.remove('landed'); el.classList.add('rolling'); } });
+        const scene = this.diceScene;
+        if (!scene) return;
+        scene.startRolling();
 
         if (this.rollingInterval) clearInterval(this.rollingInterval);
         this.rollingInterval = setInterval(() => {
-            dieEls.forEach(el => { if (el) this.applyFace(el, 1 + Math.floor(Math.random() * 6), true); });
+            [0, 1, 2].forEach(i => scene.showFace(i, 1 + Math.floor(Math.random() * 6), false));
         }, 90);
 
         setTimeout(() => {
             if (this.rollingInterval) { clearInterval(this.rollingInterval); this.rollingInterval = null; }
-            dieEls.forEach(el => {
-                if (el) {
-                    el.classList.remove('rolling');
-                    el.classList.add('landed');
-                }
-            });
-            // お皿に着地した時のバウンド演出が終わったらクラスを外しておく
-            setTimeout(() => { dieEls.forEach(el => { if (el) el.classList.remove('landed'); }); }, 320);
+            scene.stopRolling();
         }, 850);
     },
 
@@ -237,7 +278,6 @@ GameRegistry.chinchiro = {
         const myResult = gameState.chinchiroResults[myAccountId];
         if (!myResult) { this.isRolling = false; return; }
 
-        // 振った後は昇順に並べて表示する
         const dice = [0, 0, 0].map(() => 1 + Math.floor(Math.random() * 6)).sort((a, b) => a - b);
         const judged = this.judgeDice(dice);
 
@@ -272,20 +312,15 @@ GameRegistry.chinchiro = {
 
     // ピンゾロ演出中に実際の出目をお皿に表示する
     showDiceResult: function (dice) {
-        [0, 1, 2].forEach(i => {
-            const el = document.getElementById(`chinchiro-die-${i}`);
-            if (!el) return;
-            el.classList.remove('rolling');
-            this.applyFace(el, dice[i]);
-            el.classList.add('landed', 'win-die');
-        });
+        const scene = this.diceScene;
+        if (!scene) return;
+        [0, 1, 2].forEach(i => scene.showFace(i, dice[i], true));
     },
 
     showPinzoroFlash: function () {
         const flash = document.getElementById('chinchiro-pinzoro-flash');
         if (!flash) return;
         flash.style.display = 'flex';
-        // アニメーションを毎回最初から再生させるため、要素を作り直す
         const span = flash.querySelector('span');
         if (span) {
             const clone = span.cloneNode(true);
@@ -400,18 +435,15 @@ GameRegistry.chinchiro = {
         const handLabelEl = document.getElementById('chinchiro-current-hand-label');
         const rollBtn = document.getElementById('btn-chinchiro-roll');
 
-        if (!this.isRolling) {
+        if (!this.isRolling && this.diceScene) {
             const activeResult = activePlayer ? gameState.chinchiroResults[activePlayer.accId] : null;
             const diceToShow = activeResult ? activeResult.dice : [1, 1, 1];
             const attemptsForDisplay = activeResult ? activeResult.attempts : 0;
             [0, 1, 2].forEach(i => {
-                const el = document.getElementById(`chinchiro-die-${i}`);
-                if (!el) return;
-                el.classList.remove('win-die');
                 if (attemptsForDisplay > 0) {
-                    this.applyFace(el, diceToShow[i]);
+                    this.diceScene.showFace(i, diceToShow[i], false);
                 } else {
-                    el.classList.add('unrolled');
+                    this.diceScene.showUnrolled(i);
                 }
             });
             handLabelEl.textContent = (activeResult && activeResult.attempts > 0) ? activeResult.label : '';

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>オンラインゲームルーム</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.70.0/phaser.min.js"></script>
     <style>
         :root {
             --bg-color: #0f111a;
@@ -1012,6 +1014,28 @@
             display: flex;
         }
 
+        /* ビーチバレー用CSS */
+        .volleyball-board {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .volleyball-board.active {
+            display: flex;
+        }
+
+        .volleyball-stage {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #4FC3E0;
+        }
+
         .dice-stage {
             display: flex;
             justify-content: center;
@@ -1580,6 +1604,7 @@
                     チンチロ を開始</button>
                 <button class="btn btn-primary" onclick="GameRegistry.chinchiguti.hostGame()">🎲 チンチ口を開始</button>
                 <button class="btn btn-purple" onclick="GameRegistry.traprun.hostGame()">🏃 トラップランナー を開始</button>
+                <button class="btn btn-purple" onclick="GameRegistry.volleyball.hostGame()">🏐 ビーチバレー を開始</button>
                 <button class="btn btn-danger" onclick="leaveRoom()">🚪 部屋から退出する</button>
             </div>
         </div>
@@ -1674,7 +1699,7 @@
 
         // ゲームごとの盤面要素をここに集約しておくと、ゲームを追加/削除するときに
         // 各ゲームファイルの syncUI() を1つずつ書き換えなくて済む。
-        const ALL_GAME_BOARD_IDS = ['uno-board-area', 'draw-board-area', 'draw-result-area', 'chinchiro-board-area', 'chinchiguti-board-area', 'traprun-board-area'];
+        const ALL_GAME_BOARD_IDS = ['uno-board-area', 'draw-board-area', 'draw-result-area', 'chinchiro-board-area', 'chinchiguti-board-area', 'traprun-board-area', 'volleyball-board-area'];
         function showGameBoard(activeId) {
             ALL_GAME_BOARD_IDS.forEach(id => {
                 const el = document.getElementById(id);
@@ -1863,6 +1888,7 @@
                 });
                 if (data.type === 'RETURN_TO_LOBBY') {
                     if (typeof GameRegistry.uno?.clearTimer === "function") GameRegistry.uno.clearTimer();
+                    if (typeof GameRegistry.volleyball?.destroyPhaser === "function") GameRegistry.volleyball.destroyPhaser();
                     gameState.isStarted = false;
                     document.getElementById('game-workspace').classList.remove('active');
                     document.getElementById('lobby-panel').classList.add('active');
@@ -1963,6 +1989,7 @@
 
         function sendReturnToLobby() {
             if (typeof GameRegistry.uno?.clearTimer === "function") GameRegistry.uno.clearTimer();
+            if (typeof GameRegistry.volleyball?.destroyPhaser === "function") GameRegistry.volleyball.destroyPhaser();
             gameState.isStarted = false;
             document.getElementById('game-workspace').classList.remove('active');
             document.getElementById('lobby-panel').classList.add('active');
@@ -2005,6 +2032,7 @@
     <script src="games/chinchiro.js"></script>
     <script src="games/chinchiguti.js"></script>
     <script src="games/traprun.js"></script>
+    <script src="games/volleyball.js"></script>
 </body>
 
 </html>
